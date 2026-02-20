@@ -163,6 +163,7 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
             else -> 220.dpToPx()
         }
 
+
         view.layoutParams = params
         view.requestLayout()
     }
@@ -186,6 +187,7 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
             shiftState = ShiftState.OFF
             loadKeyboard(currentLanguage, currentMode)
         }
+
 
         moveKeyboardAboveNavBar()
 

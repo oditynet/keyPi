@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
+    android:keyWidth="10%p"
+    android:keyHeight="60dp"
+    android:horizontalGap="1dp"
+    android:verticalGap="2dp">
+
+    <!-- Первый ряд эмодзи -->
+    <Row>
+        <Key android:codes="128512" android:keyLabel="😀" android:keyEdgeFlags="left"/>
+        <Key android:codes="128513" android:keyLabel="😁"/>
+        <Key android:codes="128514" android:keyLabel="😂"/>
+        <Key android:codes="128515" android:keyLabel="😃"/>
+        <Key android:codes="128516" android:keyLabel="😄"/>
+        <Key android:codes="128517" android:keyLabel="😅"/>
+        <Key android:codes="128518" android:keyLabel="😆"/>
+        <Key android:codes="128519" android:keyLabel="😇"/>
+        <Key android:codes="128520" android:keyLabel="😈"/>
+        <Key android:codes="128521" android:keyLabel="😉" android:keyEdgeFlags="right"/>
+    </Row>
+
+    <!-- Второй ряд эмодзи -->
+    <Row>
+        <Key android:codes="128522" android:keyLabel="😊" android:keyEdgeFlags="left"/>
+        <Key android:codes="128523" android:keyLabel="😋"/>
+        <Key android:codes="128524" android:keyLabel="😌"/>
+        <Key android:codes="128525" android:keyLabel="😍"/>
+        <Key android:codes="128526" android:keyLabel="😎"/>
+        <Key android:codes="128527" android:keyLabel="😏"/>
+        <Key android:codes="128528" android:keyLabel="😐"/>
+        <Key android:codes="128529" android:keyLabel="😑"/>
+        <Key android:codes="128530" android:keyLabel="😒"/>
+        <Key android:codes="128531" android:keyLabel="😓" android:keyEdgeFlags="right"/>
+    </Row>
+
+    <!-- Третий ряд эмодзи -->
+    <Row>
+        <Key android:codes="128076" android:keyLabel="👍" android:keyEdgeFlags="left"/>
+        <Key android:codes="128077" android:keyLabel="👎"/>
+        <Key android:codes="128078" android:keyLabel="👌"/>
+        <Key android:codes="128079" android:keyLabel="✌️"/>
+        <Key android:codes="128080" android:keyLabel="🤞"/>
+        <Key android:codes="128081" android:keyLabel="🤟"/>
+        <Key android:codes="128082" android:keyLabel="🤘"/>
+        <Key android:codes="128083" android:keyLabel="🤙"/>
+        <Key android:codes="128084" android:keyLabel="👈"/>
+        <Key android:codes="128085" android:keyLabel="👉" android:keyEdgeFlags="right"/>
+    </Row>
+
+    <!-- Нижний служебный ряд -->
+    <Row android:rowEdgeFlags="bottom">
+        <Key android:codes="-1" android:keyLabel="⇧" android:keyWidth="10%p" android:keyEdgeFlags="left"/>
+        <Key android:codes="-2" android:keyLabel="🌐" android:keyWidth="10%p"/>
+        <Key android:codes="-6" android:keyLabel="ABC" android:keyWidth="10%p"/>
+        <Key android:codes="32" android:keyLabel="␣" android:keyWidth="30%p" android:isRepeatable="true"/>
+        <Key android:codes="-4" android:keyLabel="!?" android:keyWidth="10%p" android:popupCharacters="😊😂😍👍🎉"/>
+        <Key android:codes="46" android:keyLabel="." android:keyWidth="10%p"/>
+        <Key android:codes="10" android:keyLabel="↵" android:keyWidth="20%p" android:keyEdgeFlags="right"/>
+    </Row>
+</Keyboard>

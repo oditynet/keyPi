@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "com.example.keyboard.app-mergeDebugResources-47:/layout/activity_main.xml",
+        "source": "com.example.keyboard.app-main-50:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.example.keyboard.app-mergeDebugResources-47:/layout/activity_settings.xml",
+        "source": "com.example.keyboard.app-main-50:/layout/activity_settings.xml"
+    },
+    {
+        "merged": "com.example.keyboard.app-mergeDebugResources-47:/layout/key_preview.xml",
+        "source": "com.example.keyboard.app-main-50:/layout/key_preview.xml"
+    },
+    {
+        "merged": "com.example.keyboard.app-mergeDebugResources-47:/layout/keyboard_view.xml",
+        "source": "com.example.keyboard.app-main-50:/layout/keyboard_view.xml"
+    }
+]

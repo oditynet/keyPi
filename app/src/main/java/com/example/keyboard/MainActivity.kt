@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.SeekBar
@@ -43,6 +44,9 @@ class MainActivity : AppCompatActivity() {
         loadSettings()
         setupListeners()
         checkKeyboardEnabled()
+
+        val density = resources.displayMetrics.density
+Log.d("TEST", "Density = $density") // У вас в логах должно быть 3.0
         //updateLanguageInfo()
     }
 
