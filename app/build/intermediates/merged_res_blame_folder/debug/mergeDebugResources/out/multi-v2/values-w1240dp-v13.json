@@ -4,7 +4,7 @@
             "outputFile": "com.example.keyboard.app-mergeDebugResources-46:/values-w1240dp-v13/values-w1240dp-v13.xml",
             "map": [
                 {
-                    "source": "/home/odity/AndroidStudioProjects/Keyboard/app/src/main/res/values-w1240dp/dimens.xml",
+                    "source": "/home/odity/bin/keyboard/app/src/main/res/values-w1240dp/dimens.xml",
                     "from": {
                         "startLines": "1",
                         "startColumns": "4",

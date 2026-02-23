@@ -9,8 +9,8 @@
 9        android:targetSdkVersion="36" />
 10
 11    <uses-permission android:name="android.permission.VIBRATE" />
-11-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:4:1-62
-11-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:4:18-59
+11-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:4:1-62
+11-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:4:18-59
 12
 13    <permission
 13-->[androidx.core:core:1.17.0] /home/odity/.gradle/caches/9.1.0/transforms/b8001bc5d676d4788b36bcdd7fe0b2fe/transformed/core-1.17.0/AndroidManifest.xml:22:5-24:47
@@ -24,72 +24,72 @@
 17-->[androidx.core:core:1.17.0] /home/odity/.gradle/caches/9.1.0/transforms/b8001bc5d676d4788b36bcdd7fe0b2fe/transformed/core-1.17.0/AndroidManifest.xml:26:22-94
 18
 19    <application
-19-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:5:5-41:19
+19-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:5:5-41:19
 20        android:allowBackup="true"
-20-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:6:9-35
+20-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:6:9-35
 21        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
 21-->[androidx.core:core:1.17.0] /home/odity/.gradle/caches/9.1.0/transforms/b8001bc5d676d4788b36bcdd7fe0b2fe/transformed/core-1.17.0/AndroidManifest.xml:28:18-86
 22        android:debuggable="true"
 23        android:extractNativeLibs="false"
 24        android:label="@string/app_name"
-24-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:8:9-41
+24-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:8:9-41
 25        android:testOnly="true"
 26        android:theme="@style/Theme.AppCompat.Light.DarkActionBar" >
-26-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:9:9-67
+26-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:9:9-67
 27
 28        <!-- Главная активность -->
 29        <activity
-29-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:12:9-20:20
+29-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:12:9-20:20
 30            android:name="com.example.keyboard.MainActivity"
-30-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:13:13-41
+30-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:13:13-41
 31            android:exported="true"
-31-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:14:13-36
-32            android:label="My Keyboard" >
-32-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:15:13-40
+31-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:14:13-36
+32            android:label="keyPi" >
+32-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:15:13-34
 33            <intent-filter>
-33-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:16:13-19:29
+33-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:16:13-19:29
 34                <action android:name="android.intent.action.MAIN" />
-34-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:17:17-69
-34-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:17:25-66
+34-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:17:17-69
+34-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:17:25-66
 35
 36                <category android:name="android.intent.category.LAUNCHER" />
-36-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:18:17-77
-36-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:18:27-74
+36-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:18:17-77
+36-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:18:27-74
 37            </intent-filter>
 38        </activity>
 39
 40        <!-- Активность настроек -->
 41        <activity
-41-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:23:9-26:52
+41-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:23:9-26:52
 42            android:name="com.example.keyboard.SettingsActivity"
-42-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:24:13-45
+42-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:24:13-45
 43            android:exported="true"
-43-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:25:13-36
+43-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:25:13-36
 44            android:label="Настройки клавиатуры" />
-44-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:26:13-49
+44-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:26:13-49
 45
 46        <!-- Сервис клавиатуры -->
 47        <service
-47-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:29:9-39:19
+47-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:29:9-39:19
 48            android:name="com.example.keyboard.MyKeyboardService"
-48-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:30:13-46
+48-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:30:13-46
 49            android:exported="true"
-49-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:32:13-36
+49-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:32:13-36
 50            android:permission="android.permission.BIND_INPUT_METHOD" >
-50-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:31:13-70
+50-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:31:13-70
 51            <intent-filter>
-51-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:33:13-35:29
+51-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:33:13-35:29
 52                <action android:name="android.view.InputMethod" />
-52-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:34:17-67
-52-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:34:25-64
+52-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:34:17-67
+52-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:34:25-64
 53            </intent-filter>
 54
 55            <meta-data
-55-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:36:13-38:50
+55-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:36:13-38:50
 56                android:name="android.view.im"
-56-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:37:17-47
+56-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:37:17-47
 57                android:resource="@xml/method" />
-57-->/home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:38:17-47
+57-->/home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:38:17-47
 58        </service>
 59
 60        <provider

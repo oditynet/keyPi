@@ -59,7 +59,9 @@ int style Base_Theme_Keyboard 0x0
 int style Theme_Keyboard 0x0
 int xml keyboard_layout_emoji 0x0
 int xml keyboard_layout_en 0x0
+int xml keyboard_layout_en_number 0x0
 int xml keyboard_layout_ru 0x0
+int xml keyboard_layout_ru_number 0x0
 int xml keyboard_layout_symbols 0x0
 int xml keyboard_popup 0x0
 int xml method 0x0

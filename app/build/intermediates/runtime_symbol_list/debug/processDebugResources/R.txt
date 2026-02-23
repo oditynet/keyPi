@@ -7286,7 +7286,9 @@ int[] styleable include { 0x7f040137 }
 int styleable include_constraintSet 0
 int xml keyboard_layout_emoji 0x7f120000
 int xml keyboard_layout_en 0x7f120001
+int xml keyboard_layout_en_number 0x7f120007
 int xml keyboard_layout_ru 0x7f120002
+int xml keyboard_layout_ru_number 0x7f120006
 int xml keyboard_layout_symbols 0x7f120003
 int xml keyboard_popup 0x7f120004
 int xml method 0x7f120005

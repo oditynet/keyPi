@@ -12,12 +12,20 @@
         "source": "/home/odity/.gradle/daemon/9.1.0/com.example.keyboard.app-main-50:/xml/method.xml"
     },
     {
-        "merged": "/home/odity/.gradle/daemon/9.1.0/com.example.keyboard.app-debug-48:/drawable_key_background.xml.flat",
-        "source": "/home/odity/.gradle/daemon/9.1.0/com.example.keyboard.app-main-50:/drawable/key_background.xml"
+        "merged": "com.example.keyboard.app-debug-48:/xml_keyboard_layout_ru_number.xml.flat",
+        "source": "com.example.keyboard.app-main-50:/xml/keyboard_layout_ru_number.xml"
+    },
+    {
+        "merged": "/home/odity/.gradle/daemon/9.1.0/com.example.keyboard.app-debug-48:/xml_keyboard_layout_ru_number.xml.flat",
+        "source": "/home/odity/.gradle/daemon/9.1.0/com.example.keyboard.app-main-50:/xml/keyboard_layout_ru_number.xml"
     },
     {
         "merged": "/home/odity/.gradle/daemon/9.1.0/com.example.keyboard.app-debug-48:/drawable_preview_background.xml.flat",
         "source": "/home/odity/.gradle/daemon/9.1.0/com.example.keyboard.app-main-50:/drawable/preview_background.xml"
+    },
+    {
+        "merged": "/home/odity/.gradle/daemon/9.1.0/com.example.keyboard.app-debug-48:/drawable_key_background.xml.flat",
+        "source": "/home/odity/.gradle/daemon/9.1.0/com.example.keyboard.app-main-50:/drawable/key_background.xml"
     },
     {
         "merged": "/home/odity/.gradle/daemon/9.1.0/com.example.keyboard.app-debug-48:/drawable_key_preview.xml.flat",
@@ -50,6 +58,10 @@
     {
         "merged": "/home/odity/.gradle/daemon/9.1.0/com.example.keyboard.app-debug-48:/layout_key_preview.xml.flat",
         "source": "/home/odity/.gradle/daemon/9.1.0/com.example.keyboard.app-main-50:/layout/key_preview.xml"
+    },
+    {
+        "merged": "/home/odity/.gradle/daemon/9.1.0/com.example.keyboard.app-debug-48:/xml_keyboard_layout_en_number.xml.flat",
+        "source": "/home/odity/.gradle/daemon/9.1.0/com.example.keyboard.app-main-50:/xml/keyboard_layout_en_number.xml"
     },
     {
         "merged": "/home/odity/.gradle/daemon/9.1.0/com.example.keyboard.app-debug-48:/xml_keyboard_layout_symbols.xml.flat",

@@ -43,10 +43,10 @@ com.example.keyboard.app-savedstate-1.2.1-41 /home/odity/.gradle/caches/9.1.0/tr
 com.example.keyboard.app-navigation-ui-2.6.0-42 /home/odity/.gradle/caches/9.1.0/transforms/f52dcc5ed155c9a2cdd9326ac2bbd0f6/transformed/navigation-ui-2.6.0/res
 com.example.keyboard.app-activity-1.8.0-43 /home/odity/.gradle/caches/9.1.0/transforms/fbb88222f2b49f8575cfe16ab0db7ae6/transformed/activity-1.8.0/res
 com.example.keyboard.app-material-1.10.0-44 /home/odity/.gradle/caches/9.1.0/transforms/fdb6f22b143744104b04557e5ff91bbe/transformed/material-1.10.0/res
-com.example.keyboard.app-pngs-45 /home/odity/AndroidStudioProjects/Keyboard/app/build/generated/res/pngs/debug
-com.example.keyboard.app-updated_navigation_xml-46 /home/odity/AndroidStudioProjects/Keyboard/app/build/generated/updated_navigation_xml/debug
-com.example.keyboard.app-packageDebugResources-47 /home/odity/AndroidStudioProjects/Keyboard/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
-com.example.keyboard.app-packageDebugResources-48 /home/odity/AndroidStudioProjects/Keyboard/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
-com.example.keyboard.app-debug-49 /home/odity/AndroidStudioProjects/Keyboard/app/build/intermediates/merged_res/debug/mergeDebugResources
-com.example.keyboard.app-debug-50 /home/odity/AndroidStudioProjects/Keyboard/app/src/debug/res
-com.example.keyboard.app-main-51 /home/odity/AndroidStudioProjects/Keyboard/app/src/main/res
+com.example.keyboard.app-pngs-45 /home/odity/bin/keyboard/app/build/generated/res/pngs/debug
+com.example.keyboard.app-updated_navigation_xml-46 /home/odity/bin/keyboard/app/build/generated/updated_navigation_xml/debug
+com.example.keyboard.app-packageDebugResources-47 /home/odity/bin/keyboard/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.example.keyboard.app-packageDebugResources-48 /home/odity/bin/keyboard/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.example.keyboard.app-debug-49 /home/odity/bin/keyboard/app/build/intermediates/merged_res/debug/mergeDebugResources
+com.example.keyboard.app-debug-50 /home/odity/bin/keyboard/app/src/debug/res
+com.example.keyboard.app-main-51 /home/odity/bin/keyboard/app/src/main/res

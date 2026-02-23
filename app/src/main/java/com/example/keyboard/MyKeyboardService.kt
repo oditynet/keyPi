@@ -25,6 +25,14 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
     private var currentLanguage = "ru"
     private var currentMode = "letters"
 
+    // Переменные для разных раскладок
+    private var mRussianKeyboardWithoutNumbers: Keyboard? = null
+    private var mRussianKeyboardWithNumbers: Keyboard? = null
+    private var mEnglishKeyboardWithoutNumbers: Keyboard? = null
+    private var mEnglishKeyboardWithNumbers: Keyboard? = null
+    private var mEmojiKeyboard: Keyboard? = null
+    private var mSymbolKeyboard: Keyboard? = null
+
     // Состояние Shift
     private var shiftState = ShiftState.OFF
 
@@ -59,9 +67,10 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
 
     companion object {
         const val KEYCODE_LANG_SWITCH = -2
-        const val KEYCODE_EMOJI = -3
-        const val KEYCODE_SYMBOLS = -4
-        const val KEYCODE_BACK_TO_LETTERS = -6
+        const val KEYCODE_NUMBERS = -3      // 123 - показать цифры
+        const val KEYCODE_EMOJI = -4         // 😊 - смайлики
+        const val KEYCODE_SYMBOLS = -6       // !? - спецсимволы
+        const val KEYCODE_BACK_TO_LETTERS = -7 // для возврата к буквам
 
         const val PREF_KEY_LANGUAGE = "keyboard_language"
         const val PREF_KEY_TOUCH_SENSITIVITY = "touch_sensitivity"
@@ -69,7 +78,7 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
         const val PREF_KEY_VIBRO = "vibro"
         const val PREF_KEY_KEY_SIZE = "key_size"
 
-        private const val TAG = "MyKeyboard"
+        private const val TAG = "keyPi"
     }
 
     override fun onCreate() {
@@ -84,6 +93,14 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
 
         // Загружаем настройки
         loadSettings()
+
+        // ЗАГРУЖАЕМ ВСЕ РАСКЛАДКИ
+        mRussianKeyboardWithoutNumbers = Keyboard(this, R.xml.keyboard_layout_ru)
+        mRussianKeyboardWithNumbers = Keyboard(this, R.xml.keyboard_layout_ru_number)
+        mEnglishKeyboardWithoutNumbers = Keyboard(this, R.xml.keyboard_layout_en)
+        mEnglishKeyboardWithNumbers = Keyboard(this, R.xml.keyboard_layout_en_number)
+        mEmojiKeyboard = Keyboard(this, R.xml.keyboard_layout_emoji)
+        mSymbolKeyboard = Keyboard(this, R.xml.keyboard_layout_symbols)
 
         currentLanguage = prefs.getString(PREF_KEY_LANGUAGE, "ru") ?: "ru"
         Log.d(TAG, "Keyboard service created")
@@ -108,7 +125,7 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
                 Log.d(TAG, "Use context updated to $useContext")
             }
             PREF_KEY_VIBRO -> {
-                vibroEnabled = prefs.getBoolean(PREF_KEY_VIBRO, true)
+                vibroEnabled = prefs.getBoolean(PREF_KEY_VIBRO, false)
                 Log.d(TAG, "Vibro updated to $vibroEnabled")
             }
             PREF_KEY_KEY_SIZE -> {
@@ -231,12 +248,12 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
 
     private fun loadKeyboard(language: String, mode: String) {
         currentKeyboard = when (mode) {
-            "symbols" -> Keyboard(this, R.xml.keyboard_layout_symbols)
-            "emoji" -> Keyboard(this, R.xml.keyboard_layout_emoji)
-            else -> {
+            "symbols" -> mSymbolKeyboard
+            "emoji" -> mEmojiKeyboard
+            else -> { // "letters"
                 when (language) {
-                    "ru" -> Keyboard(this, R.xml.keyboard_layout_ru)
-                    else -> Keyboard(this, R.xml.keyboard_layout_en)
+                    "ru" -> mRussianKeyboardWithoutNumbers // По умолчанию без цифр
+                    else -> mEnglishKeyboardWithNumbers // По умолчанию без цифр
                 }
             }
         }
@@ -393,6 +410,8 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
 
             KEYCODE_LANG_SWITCH -> { // -2
                 currentLanguage = if (currentLanguage == "ru") "en" else "ru"
+                // При смене языка сбрасываем режим на буквы без цифр
+                currentMode = "letters"
                 loadKeyboard(currentLanguage, currentMode)
                 shiftState = ShiftState.OFF
                 updateShiftIndicator()
@@ -401,18 +420,70 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
                 return
             }
 
-            KEYCODE_EMOJI, KEYCODE_SYMBOLS -> { // -3, -4
-                currentMode = if (currentMode == "letters") "symbols" else "emoji"
-                loadKeyboard(currentLanguage, currentMode)
-                shiftState = ShiftState.OFF
-                updateShiftIndicator()
-                Log.d(TAG, "Mode switch to $currentMode")
+            KEYCODE_NUMBERS -> { // -3 - переключение цифрового ряда
+                if (currentMode == "letters") {
+                    when (currentLanguage) {
+                        "ru" -> {
+                            // Переключаем между русской клавиатурой с цифрами и без
+                            if (currentKeyboard == mRussianKeyboardWithoutNumbers) {
+                                // Сейчас без цифр - показываем с цифрами
+                                currentKeyboard = mRussianKeyboardWithNumbers
+                                Log.d(TAG, "Switching to Russian keyboard WITH numbers")
+                            } else {
+                                // Сейчас с цифрами - возвращаем без цифр
+                                currentKeyboard = mRussianKeyboardWithoutNumbers
+                                Log.d(TAG, "Switching to Russian keyboard WITHOUT numbers")
+                            }
+                        }
+                        else -> {
+                            // Переключаем между английской клавиатурой с цифрами и без
+                            if (currentKeyboard == mEnglishKeyboardWithoutNumbers) {
+                                // Сейчас без цифр - показываем с цифрами
+                                currentKeyboard = mEnglishKeyboardWithNumbers
+                                Log.d(TAG, "Switching to English keyboard WITH numbers")
+                            } else {
+                                // Сейчас с цифрами - возвращаем без цифр
+                                currentKeyboard = mEnglishKeyboardWithoutNumbers
+                                Log.d(TAG, "Switching to English keyboard WITHOUT numbers")
+                            }
+                        }
+                    }
+                    keyboardView?.keyboard = currentKeyboard
+                    keyboardView?.invalidateAllKeys()
+                }
                 return
             }
 
-            KEYCODE_BACK_TO_LETTERS -> { // -6
-                currentMode = "letters"
+            KEYCODE_EMOJI -> { // -4 - смайлики
+                currentMode = "emoji"
                 loadKeyboard(currentLanguage, currentMode)
+                shiftState = ShiftState.OFF
+                updateShiftIndicator()
+                Log.d(TAG, "Mode switch to emoji")
+                return
+            }
+
+            KEYCODE_SYMBOLS -> { // -6 - спецсимволы
+                currentMode = "symbols"
+                loadKeyboard(currentLanguage, currentMode)
+                shiftState = ShiftState.OFF
+                updateShiftIndicator()
+                Log.d(TAG, "Mode switch to symbols")
+                return
+            }
+
+            KEYCODE_BACK_TO_LETTERS -> { // -7 - возврат к буквам
+                currentMode = "letters"
+                // При возврате в буквы используем клавиатуру БЕЗ цифр
+                when (currentLanguage) {
+                    "ru" -> {
+                        currentKeyboard = mRussianKeyboardWithoutNumbers
+                    }
+                    else -> {
+                        currentKeyboard = mEnglishKeyboardWithoutNumbers
+                    }
+                }
+                keyboardView?.keyboard = currentKeyboard
                 shiftState = ShiftState.OFF
                 updateShiftIndicator()
                 Log.d(TAG, "Back to letters")
@@ -467,6 +538,11 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
 
         when (keyCode) {
             // Русские
+            1073 -> { // б -> ю
+                val result = if (shouldBeUpper) "Ю" else "ю"
+                inputConnection.commitText(result, 1)
+                Log.d(TAG, "Long press: б -> $result")
+            }
             1077 -> { // е
                 val result = if (shouldBeUpper) "Ё" else "ё"
                 inputConnection.commitText(result, 1)
@@ -482,10 +558,15 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
                 inputConnection.commitText(result, 1)
                 Log.d(TAG, "Long press: ь -> $result")
             }
-            1093 -> { // х
+            1078 -> { // ж -> э
                 val result = if (shouldBeUpper) "Э" else "э"
                 inputConnection.commitText(result, 1)
-                Log.d(TAG, "Long press: х -> $result")
+                Log.d(TAG, "Long press: ж -> $result")
+            }
+            1079 -> { // з -> х
+                val result = if (shouldBeUpper) "Х" else "х"
+                inputConnection.commitText(result, 1)
+                Log.d(TAG, "Long press: з -> $result")
             }
             // Точка/запятая
             44 -> { // ,
@@ -497,7 +578,7 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
                 Log.d(TAG, "Long press: . -> ,")
             }
             // Служебные
-            -4 -> { // !? -> emoji mode
+            KEYCODE_SYMBOLS -> { // -6 -> emoji mode
                 currentMode = "emoji"
                 loadKeyboard(currentLanguage, currentMode)
                 Log.d(TAG, "Long press: !? -> emoji mode")

@@ -19,7 +19,9 @@ class MyKeyboardView : KeyboardView {
         "е" to "ё",
         "и" to "й",
         "ь" to "ъ",
-        "х" to "э",
+        "з" to "х",
+        "ж" to "э",
+        "б" to "ю",
         // Английские (без ё)
         "," to ".",
         "." to ","

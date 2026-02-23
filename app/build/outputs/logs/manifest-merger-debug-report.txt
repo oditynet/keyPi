@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:2:1-43:12
-INJECTED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:2:1-43:12
-INJECTED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:2:1-43:12
-INJECTED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:2:1-43:12
+ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:2:1-43:12
+INJECTED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:2:1-43:12
+INJECTED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:2:1-43:12
+INJECTED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:2:1-43:12
 MERGED from [androidx.databinding:viewbinding:9.0.1] /home/odity/.gradle/caches/9.1.0/transforms/bf68aded0955d8f0cbc12ace804f8d37/transformed/viewbinding-9.0.1/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.navigation:navigation-common:2.6.0] /home/odity/.gradle/caches/9.1.0/transforms/672831747565e25dcb6a1281db65852b/transformed/navigation-common-2.6.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.navigation:navigation-common-ktx:2.6.0] /home/odity/.gradle/caches/9.1.0/transforms/c029dc5ad61c878eeecb3c78b78d0cd9/transformed/navigation-common-ktx-2.6.0/AndroidManifest.xml:17:1-22:12
@@ -64,21 +64,21 @@ MERGED from [androidx.print:print:1.0.0] /home/odity/.gradle/caches/9.1.0/transf
 MERGED from [androidx.annotation:annotation-experimental:1.4.1] /home/odity/.gradle/caches/9.1.0/transforms/a1b62e91c4038a217284f96cd427a041/transformed/annotation-experimental-1.4.1/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.core:core-viewtree:1.0.0] /home/odity/.gradle/caches/9.1.0/transforms/4a36c5797fd45b842527b0abc0b9ecb8/transformed/core-viewtree-1.0.0/AndroidManifest.xml:2:1-7:12
 	package
-		ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:3:5-35
-		INJECTED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml
+		ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:3:5-35
+		INJECTED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml
 	android:versionName
-		INJECTED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml
+		INJECTED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml
 	android:versionCode
-		INJECTED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml
+		INJECTED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml
 	xmlns:android
-		ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:2:11-69
+		ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:2:11-69
 uses-permission#android.permission.VIBRATE
-ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:4:1-62
+ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:4:1-62
 	android:name
-		ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:4:18-59
+		ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:4:18-59
 application
-ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:5:5-41:19
-INJECTED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:5:5-41:19
+ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:5:5-41:19
+INJECTED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:5:5-41:19
 MERGED from [com.google.android.material:material:1.10.0] /home/odity/.gradle/caches/9.1.0/transforms/fdb6f22b143744104b04557e5ff91bbe/transformed/material-1.10.0/AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.10.0] /home/odity/.gradle/caches/9.1.0/transforms/fdb6f22b143744104b04557e5ff91bbe/transformed/material-1.10.0/AndroidManifest.xml:22:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /home/odity/.gradle/caches/9.1.0/transforms/95869626c14e1811f8f229ecd1cdaa68/transformed/constraintlayout-2.1.4/AndroidManifest.xml:9:5-20
@@ -98,65 +98,65 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] /home/odity/.gradle/caches/
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/odity/.gradle/caches/9.1.0/transforms/9a1f7221d56c78c57aa9aa5ba9d71cc3/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/odity/.gradle/caches/9.1.0/transforms/9a1f7221d56c78c57aa9aa5ba9d71cc3/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
 	android:extractNativeLibs
-		INJECTED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml
+		INJECTED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.17.0] /home/odity/.gradle/caches/9.1.0/transforms/b8001bc5d676d4788b36bcdd7fe0b2fe/transformed/core-1.17.0/AndroidManifest.xml:28:18-86
 	android:label
-		ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:8:9-41
+		ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:8:9-41
 	android:allowBackup
-		ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:6:9-35
+		ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:6:9-35
 	android:theme
-		ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:9:9-67
+		ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:9:9-67
 activity#com.example.keyboard.MainActivity
-ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:12:9-20:20
+ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:12:9-20:20
 	android:label
-		ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:15:13-40
+		ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:15:13-34
 	android:exported
-		ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:14:13-36
+		ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:14:13-36
 	android:name
-		ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:13:13-41
+		ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:13:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:16:13-19:29
+ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:16:13-19:29
 action#android.intent.action.MAIN
-ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:17:17-69
+ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:17:17-69
 	android:name
-		ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:17:25-66
+		ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:17:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:18:17-77
+ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:18:17-77
 	android:name
-		ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:18:27-74
+		ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:18:27-74
 activity#com.example.keyboard.SettingsActivity
-ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:23:9-26:52
+ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:23:9-26:52
 	android:label
-		ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:26:13-49
+		ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:26:13-49
 	android:exported
-		ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:25:13-36
+		ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:25:13-36
 	android:name
-		ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:24:13-45
+		ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:24:13-45
 service#com.example.keyboard.MyKeyboardService
-ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:29:9-39:19
+ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:29:9-39:19
 	android:exported
-		ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:32:13-36
+		ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:32:13-36
 	android:permission
-		ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:31:13-70
+		ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:31:13-70
 	android:name
-		ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:30:13-46
+		ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:30:13-46
 intent-filter#action:name:android.view.InputMethod
-ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:33:13-35:29
+ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:33:13-35:29
 action#android.view.InputMethod
-ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:34:17-67
+ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:34:17-67
 	android:name
-		ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:34:25-64
+		ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:34:25-64
 meta-data#android.view.im
-ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:36:13-38:50
+ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:36:13-38:50
 	android:resource
-		ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:38:17-47
+		ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:38:17-47
 	android:name
-		ADDED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml:37:17-47
+		ADDED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml:37:17-47
 uses-sdk
-INJECTED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
-INJECTED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml
-INJECTED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml
+INJECTED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml
+INJECTED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml
 MERGED from [androidx.databinding:viewbinding:9.0.1] /home/odity/.gradle/caches/9.1.0/transforms/bf68aded0955d8f0cbc12ace804f8d37/transformed/viewbinding-9.0.1/AndroidManifest.xml:5:5-44
 MERGED from [androidx.databinding:viewbinding:9.0.1] /home/odity/.gradle/caches/9.1.0/transforms/bf68aded0955d8f0cbc12ace804f8d37/transformed/viewbinding-9.0.1/AndroidManifest.xml:5:5-44
 MERGED from [androidx.navigation:navigation-common:2.6.0] /home/odity/.gradle/caches/9.1.0/transforms/672831747565e25dcb6a1281db65852b/transformed/navigation-common-2.6.0/AndroidManifest.xml:20:5-44
@@ -276,9 +276,9 @@ MERGED from [androidx.annotation:annotation-experimental:1.4.1] /home/odity/.gra
 MERGED from [androidx.core:core-viewtree:1.0.0] /home/odity/.gradle/caches/9.1.0/transforms/4a36c5797fd45b842527b0abc0b9ecb8/transformed/core-viewtree-1.0.0/AndroidManifest.xml:5:5-44
 MERGED from [androidx.core:core-viewtree:1.0.0] /home/odity/.gradle/caches/9.1.0/transforms/4a36c5797fd45b842527b0abc0b9ecb8/transformed/core-viewtree-1.0.0/AndroidManifest.xml:5:5-44
 	android:targetSdkVersion
-		INJECTED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml
+		INJECTED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml
 	android:minSdkVersion
-		INJECTED from /home/odity/AndroidStudioProjects/Keyboard/app/src/main/AndroidManifest.xml
+		INJECTED from /home/odity/bin/keyboard/app/src/main/AndroidManifest.xml
 provider#androidx.startup.InitializationProvider
 ADDED from [androidx.emoji2:emoji2:1.2.0] /home/odity/.gradle/caches/9.1.0/transforms/ca87c73b73b2140c3498864eb28774a3/transformed/emoji2-1.2.0/AndroidManifest.xml:24:9-32:20
 MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/odity/.gradle/caches/9.1.0/transforms/7d1ec5eb8171ac04c96d7757016ec3d3/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:24:9-32:20

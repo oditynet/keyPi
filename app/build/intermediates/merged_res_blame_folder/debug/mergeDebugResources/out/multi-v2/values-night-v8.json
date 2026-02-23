@@ -4,24 +4,7 @@
             "outputFile": "com.example.keyboard.app-mergeDebugResources-46:/values-night-v8/values-night-v8.xml",
             "map": [
                 {
-                    "source": "/home/odity/.gradle/caches/9.1.0/transforms/581d6a08ccc5826854330115b5d15fe9/transformed/appcompat-1.6.1/res/values-night-v8/values-night-v8.xml",
-                    "from": {
-                        "startLines": "2,3,4,5,6,7,8,9",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "55,125,209,293,389,491,593,687",
-                        "endColumns": "69,83,83,95,101,101,93,88",
-                        "endOffsets": "120,204,288,384,486,588,682,771"
-                    },
-                    "to": {
-                        "startLines": "6,7,8,9,10,11,12,38",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "171,241,325,409,505,607,709,3564",
-                        "endColumns": "69,83,83,95,101,101,93,88",
-                        "endOffsets": "236,320,404,500,602,704,798,3648"
-                    }
-                },
-                {
-                    "source": "/home/odity/AndroidStudioProjects/Keyboard/app/src/main/res/values-night/themes.xml",
+                    "source": "/home/odity/bin/keyboard/app/src/main/res/values-night/themes.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
@@ -37,6 +20,23 @@
                         "endLines": "5",
                         "endColumns": "12",
                         "endOffsets": "166"
+                    }
+                },
+                {
+                    "source": "/home/odity/.gradle/caches/9.1.0/transforms/581d6a08ccc5826854330115b5d15fe9/transformed/appcompat-1.6.1/res/values-night-v8/values-night-v8.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,125,209,293,389,491,593,687",
+                        "endColumns": "69,83,83,95,101,101,93,88",
+                        "endOffsets": "120,204,288,384,486,588,682,771"
+                    },
+                    "to": {
+                        "startLines": "6,7,8,9,10,11,12,38",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "171,241,325,409,505,607,709,3564",
+                        "endColumns": "69,83,83,95,101,101,93,88",
+                        "endOffsets": "236,320,404,500,602,704,798,3648"
                     }
                 },
                 {

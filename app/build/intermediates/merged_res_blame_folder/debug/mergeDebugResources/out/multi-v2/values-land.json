@@ -4,7 +4,7 @@
             "outputFile": "com.example.keyboard.app-mergeDebugResources-46:/values-land/values-land.xml",
             "map": [
                 {
-                    "source": "/home/odity/AndroidStudioProjects/Keyboard/app/src/main/res/values-land/dimens.xml",
+                    "source": "/home/odity/bin/keyboard/app/src/main/res/values-land/dimens.xml",
                     "from": {
                         "startLines": "1",
                         "startColumns": "4",

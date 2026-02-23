@@ -61,7 +61,9 @@ style Base.Theme.Keyboard
 style Theme.Keyboard
 xml keyboard_layout_emoji
 xml keyboard_layout_en
+xml keyboard_layout_en_number
 xml keyboard_layout_ru
+xml keyboard_layout_ru_number
 xml keyboard_layout_symbols
 xml keyboard_popup
 xml method
