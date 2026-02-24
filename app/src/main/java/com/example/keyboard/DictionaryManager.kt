@@ -1,21 +1,37 @@
 package com.example.keyboard
 
+import android.content.ContentValues
 import android.content.Context
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
+import android.widget.Toast
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import kotlin.math.min
+import android.os.Handler
+import android.os.Looper
+
 
 class DictionaryManager(private val context: Context) {
 
-    // Словарь: слово -> частота
-    private val wordFrequency = mutableMapOf<String, Int>()
+    private lateinit var dbHelper: DictionaryDBHelper
+    private var isLoaded = false
 
-    // Для быстрого поиска по префиксу
-    private val prefixMap = mutableMapOf<String, MutableList<Pair<String, Int>>>()
+    // Кэш для быстрого доступа к частотным словам
+    private val frequencyCache = mutableMapOf<String, Int>()
 
     // Кэш последних исправлений для отмены
-    private val lastCorrectionMap = mutableMapOf<String, String>()
+    private val lastCorrectionMap = mutableMapOf<String, CorrectionInfo>()
+
+    // Информация о текущем исправлении
+    data class CorrectionInfo(
+        val originalWord: String,
+        val correctedWord: String,
+        val position: Int // позиция слова в тексте
+    )
+
+    // Последнее исправленное слово для отмены
+    private var lastCorrection: CorrectionInfo? = null
 
     // Максимальное количество подсказок
     private val maxSuggestions = 3
@@ -25,68 +41,103 @@ class DictionaryManager(private val context: Context) {
         private set
 
     init {
-        loadDictionary()
+        dbHelper = DictionaryDBHelper(context)
+        loadDictionaryAsync()
     }
 
-    private fun loadDictionary() {
+    private fun loadDictionaryAsync() {
+    Thread {
         try {
             val startTime = System.currentTimeMillis()
 
-            val inputStream = context.assets.open("rus_news_2024_300K-words.txt")
+            // Проверяем, загружен ли уже словарь
+            if (dbHelper.getWordCount() > 10000) {
+                isLoaded = true
+                loadedWordsCount = dbHelper.getWordCount()
+                Log.d("Dictionary", "Dictionary already loaded: $loadedWordsCount words")
+                return@Thread
+            }
+
+
+
+            val inputStream = context.resources.openRawResource(R.raw.rus_news_2024_300k_words)
             val reader = BufferedReader(InputStreamReader(inputStream))
 
-            var lineCount = 0
-            var validWordCount = 0
+            val db = dbHelper.writableDatabase
+            db.beginTransaction()
 
-            reader.useLines { lines ->
-                lines.forEach { line ->
-                    try {
-                        lineCount++
+            try {
+                var lineCount = 0
+                var validWordCount = 0
 
-                        if (lineCount % 50000 == 0) {
-                            Log.d("Dictionary", "Loading... $lineCount lines processed")
-                        }
+                val batchSize = 5000  // увеличил для скорости
+                val contentValuesList = mutableListOf<ContentValues>()
 
-                        val parts = line.trim().split("\\s+".toRegex())
-                        if (parts.size >= 3) {
-                            val word = parts[1]
-                            val frequency = parts[2].toInt()
+                reader.useLines { lines ->
+                    lines.forEach { line ->
+                        try {
+                            lineCount++
 
-                            // Берем только отдельные слова (без пробелов)
-                            if (!word.contains(" ") && !word.contains("-") && word.length in 2..20) {
+                            // ПРОСТО БЕРЕМ ВСЮ СТРОКУ - ЭТО СЛОВО
+                            val word = line.trim().lowercase()
 
-                                wordFrequency[word] = frequency
+                            // Базовая проверка
+                            if (word.isNotEmpty() && word.length in 2..20) {
 
-                                // Индексируем только частотные слова
-                                if (frequency > 5 || word.length <= 5) {
-                                    for (i in 1..minOf(4, word.length)) {
-                                        val prefix = word.substring(0, i).lowercase()
-                                        prefixMap.getOrPut(prefix) { mutableListOf() }
-                                            .add(Pair(word, frequency))
-                                    }
+                                val contentValues = ContentValues().apply {
+                                    put(DictionaryDBHelper.COLUMN_WORD, word)
+                                    put(DictionaryDBHelper.COLUMN_FREQUENCY, 1) // частота не важна
                                 }
-
+                                contentValuesList.add(contentValues)
                                 validWordCount++
+
+                                if (contentValuesList.size >= batchSize) {
+                                    insertBatch(db, contentValuesList)
+                                    contentValuesList.clear()
+                                }
                             }
+
+                            if (lineCount % 50000 == 0) {
+                                Log.d("Dictionary", "Loading... $lineCount lines processed, $validWordCount words added")
+                            }
+
+                        } catch (e: Exception) {
+                            // Пропускаем проблемные строки
                         }
-                    } catch (e: Exception) {
-                        // Пропускаем проблемные строки
                     }
                 }
+
+                if (contentValuesList.isNotEmpty()) {
+                    insertBatch(db, contentValuesList)
+                }
+
+                db.setTransactionSuccessful()
+
+                val loadTime = System.currentTimeMillis() - startTime
+                loadedWordsCount = validWordCount
+                isLoaded = true
+
+                Log.d("Dictionary", "Loaded $validWordCount words in ${loadTime}ms")
+
+
+
+            } catch (e: Exception) {
+                Log.e("Dictionary", "Error loading dictionary", e)
+            } finally {
+                db.endTransaction()
+                db.close()
             }
-
-            // Сортируем списки по частоте
-            prefixMap.forEach { (_, list) ->
-                list.sortByDescending { it.second }
-            }
-
-            val loadTime = System.currentTimeMillis() - startTime
-            loadedWordsCount = validWordCount
-
-            Log.d("Dictionary", "Loaded $validWordCount valid words out of $lineCount lines in ${loadTime}ms")
-
         } catch (e: Exception) {
             Log.e("Dictionary", "Failed to load dictionary", e)
+        }
+    }.start()
+}
+
+
+    private fun insertBatch(db: SQLiteDatabase, valuesList: List<ContentValues>) {
+        valuesList.forEach { values ->
+            db.insertWithOnConflict(DictionaryDBHelper.TABLE_DICTIONARY,
+                null, values, SQLiteDatabase.CONFLICT_IGNORE)
         }
     }
 
@@ -94,40 +145,63 @@ class DictionaryManager(private val context: Context) {
      * Получить подсказки для автодополнения
      */
     fun getSuggestions(prefix: String): List<String> {
-        if (prefix.length < 2) return emptyList()
+        if (prefix.length < 2 || !isLoaded) return emptyList()
 
-        val lowerPrefix = prefix.lowercase()
-        return prefixMap[lowerPrefix]
-            ?.take(maxSuggestions)
-            ?.map { it.first } ?: emptyList()
+        val db = dbHelper.readableDatabase
+        val cursor = db.query(
+            DictionaryDBHelper.TABLE_DICTIONARY,
+            arrayOf(DictionaryDBHelper.COLUMN_WORD),
+            "${DictionaryDBHelper.COLUMN_WORD} LIKE ?",
+            arrayOf("$prefix%"),
+            null, null,
+            "${DictionaryDBHelper.COLUMN_FREQUENCY} DESC",
+            maxSuggestions.toString()
+        )
+
+        val suggestions = mutableListOf<String>()
+        while (cursor.moveToNext()) {
+            suggestions.add(cursor.getString(0))
+        }
+        cursor.close()
+        db.close()
+
+        return suggestions
     }
 
     /**
      * Исправить слово (автокоррекция)
-     * Возвращает Pair(исправленное слово, исходное слово) для возможности отмены
+     * Возвращает исправленное слово или null
      */
-    fun correctWord(word: String): Pair<String?, String> {
-        if (word.length < 3) return Pair(null, word)
-
-        val lowerWord = word.lowercase()
-
-        // Если слово уже есть в словаре - не исправляем
-        if (wordFrequency.containsKey(lowerWord)) {
-            return Pair(null, word)
+    fun correctWord(word: String, cursorPosition: Int = -1): String? {
+        if (word.length < 3 || !isLoaded) {
+            Log.d("Dictionary", "Skip correction: word=$word, isLoaded=$isLoaded")
+            return null
         }
 
-        // Получаем кандидаты с похожей длиной
-        val candidates = wordFrequency.keys.filter { dictWord ->
-            kotlin.math.abs(dictWord.length - lowerWord.length) <= 2
-        }.take(1000) // Ограничиваем для производительности
+        val lowerWord = word.lowercase()
+        Log.d("Dictionary", "Trying to correct: $lowerWord")
 
-        // Вычисляем расстояние Левенштейна для каждого кандидата
+        // Если слово уже есть в словаре - не исправляем
+        if (isWordInDictionary(lowerWord)) {
+            Log.d("Dictionary", "Word already in dictionary: $lowerWord")
+            return null
+        }
+
+        // Получаем кандидатов из базы данных
+        val candidates = getCandidatesFromDB(lowerWord)
+
+        if (candidates.isEmpty()) {
+            Log.d("Dictionary", "No candidates found")
+            return null
+        }
+
+        // Вычисляем расстояние Левенштейна для кандидатов
         val scoredCandidates = mutableListOf<Triple<String, Int, Int>>()
 
         for (candidate in candidates) {
             val distance = levenshteinDistance(lowerWord, candidate.lowercase())
 
-            // Динамический порог в зависимости от длины слова
+            // Динамический порог
             val maxDistance = when {
                 lowerWord.length <= 4 -> 1
                 lowerWord.length <= 6 -> 2
@@ -135,38 +209,259 @@ class DictionaryManager(private val context: Context) {
             }
 
             if (distance <= maxDistance) {
-                val frequency = wordFrequency[candidate] ?: 0
+                val frequency = getWordFrequency(candidate) ?: 0
                 scoredCandidates.add(Triple(candidate, distance, frequency))
+                Log.d("Dictionary", "Candidate $candidate: distance=$distance, frequency=$frequency")
             }
         }
 
-        if (scoredCandidates.isEmpty()) return Pair(null, word)
+        if (scoredCandidates.isEmpty()) {
+            Log.d("Dictionary", "No candidates within distance threshold")
+            return null
+        }
 
-        // Сортируем: сначала по расстоянию, потом по частоте
-        scoredCandidates.sortWith(compareBy(
-            { it.second },  // расстояние (меньше лучше)
-            { -it.third }    // частота (больше лучше)
-        ))
+
+        scoredCandidates.sortWith { a, b ->
+            when {
+                a.second != b.second -> a.second.compareTo(b.second) // сначала расстояние
+                a.first.first() == word.first() && b.first.first() != word.first() -> -1 // приоритет если первая буква совпадает
+                a.first.first() != word.first() && b.first.first() == word.first() -> 1
+                else -> b.third.compareTo(a.third) // потом частота
+            }
+        }
 
         val bestCandidate = scoredCandidates.first().first
+        Log.d("Dictionary", "Best candidate: $bestCandidate")
 
-        // Сохраняем оригинал для возможности отмены
-        lastCorrectionMap[bestCandidate] = word
+        // Сохраняем информацию для отмены
+        val correctedWithCase = preserveCase(word, bestCandidate)
 
-        // Сохраняем регистр первой буквы
-        val result = if (word[0].isUpperCase())
-            bestCandidate.replaceFirstChar { it.uppercase() }
-        else
-            bestCandidate
+        lastCorrection = CorrectionInfo(
+            originalWord = word,
+            correctedWord = correctedWithCase,
+            position = cursorPosition - word.length
+        )
 
-        return Pair(result, word)
+        lastCorrectionMap[correctedWithCase.lowercase()] = lastCorrection!!
+
+        return correctedWithCase
+    }
+
+    fun debugDictionary() {
+    Thread {
+        val db = dbHelper.readableDatabase
+
+        // Проверяем общее количество слов
+        var cursor = db.rawQuery("SELECT COUNT(*) FROM ${DictionaryDBHelper.TABLE_DICTIONARY}", null)
+        var count = 0
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0)
+        }
+        cursor.close()
+        Log.d("Dictionary", "TOTAL WORDS IN DB: $count")
+
+        // Показываем первые 10 слов
+        cursor = db.query(
+            DictionaryDBHelper.TABLE_DICTIONARY,
+            arrayOf(DictionaryDBHelper.COLUMN_WORD, DictionaryDBHelper.COLUMN_FREQUENCY),
+            null, null, null, null,
+            "${DictionaryDBHelper.COLUMN_FREQUENCY} DESC",
+            "10"
+        )
+
+        Log.d("Dictionary", "First 10 words by frequency:")
+        while (cursor.moveToNext()) {
+            val word = cursor.getString(0)
+            val freq = cursor.getInt(1)
+            Log.d("Dictionary", "  $word ($freq)")
+        }
+        cursor.close()
+
+        // Проверяем, есть ли слово "привет"
+        cursor = db.query(
+            DictionaryDBHelper.TABLE_DICTIONARY,
+            arrayOf(DictionaryDBHelper.COLUMN_WORD),
+            "${DictionaryDBHelper.COLUMN_WORD} = ?",
+            arrayOf("привет"),
+            null, null, null
+        )
+        val hasPrivet = cursor.count > 0
+        cursor.close()
+        Log.d("Dictionary", "Word 'привет' in DB: $hasPrivet")
+
+        // Проверяем слова с длиной 5-6 букв
+        cursor = db.query(
+            DictionaryDBHelper.TABLE_DICTIONARY,
+            arrayOf(DictionaryDBHelper.COLUMN_WORD),
+            "LENGTH(${DictionaryDBHelper.COLUMN_WORD}) BETWEEN 5 AND 6",
+            null, null, null,
+            null, "20"
+        )
+
+        Log.d("Dictionary", "Sample of 20 words with length 5-6:")
+        while (cursor.moveToNext()) {
+            val word = cursor.getString(0)
+            Log.d("Dictionary", "  $word")
+        }
+        cursor.close()
+
+        db.close()
+    }.start()
+}
+
+    /**
+     * Получить информацию о последнем исправлении для отмены
+     */
+    fun getLastCorrectionForUndo(correctedWord: String? = null): CorrectionInfo? {
+        return if (correctedWord != null) {
+            lastCorrectionMap[correctedWord.lowercase()]
+        } else {
+            lastCorrection
+        }
     }
 
     /**
-     * Отменить последнюю автокоррекцию для слова
+     * Очистить информацию об исправлении после отмены
      */
-    fun undoCorrection(correctedWord: String): String? {
-        return lastCorrectionMap[correctedWord.lowercase()]
+    fun clearLastCorrection(correctedWord: String) {
+        lastCorrectionMap.remove(correctedWord.lowercase())
+        if (lastCorrection?.correctedWord?.lowercase() == correctedWord.lowercase()) {
+            lastCorrection = null
+        }
+    }
+
+    private fun getCandidatesFromDB(word: String): List<String> {
+    val db = dbHelper.readableDatabase
+    val candidates = mutableSetOf<String>() // Set чтобы избежать повторов
+
+    Log.d("Dictionary", "Ищем кандидаты для: $word")
+
+    // 1. Поиск по точному совпадению (вдруг слово уже есть)
+    var cursor = db.query(
+        DictionaryDBHelper.TABLE_DICTIONARY,
+        arrayOf(DictionaryDBHelper.COLUMN_WORD),
+        "${DictionaryDBHelper.COLUMN_WORD} = ?",
+        arrayOf(word),
+        null, null, null
+    )
+    while (cursor.moveToNext()) {
+        candidates.add(cursor.getString(0))
+        Log.d("Dictionary", "Точное совпадение: ${cursor.getString(0)}")
+    }
+    cursor.close()
+
+    // 2. Поиск с одной заменой (шаблон с _)
+    // превет -> _ревет, п_евет, пр_вет, пре_ет, прев_т, преве_
+    for (i in word.indices) {
+        val pattern = word.substring(0, i) + "_" + word.substring(i + 1)
+        cursor = db.query(
+            DictionaryDBHelper.TABLE_DICTIONARY,
+            arrayOf(DictionaryDBHelper.COLUMN_WORD),
+            "${DictionaryDBHelper.COLUMN_WORD} LIKE ?",
+            arrayOf(pattern),
+            null, null, null
+        )
+        while (cursor.moveToNext()) {
+            candidates.add(cursor.getString(0))
+            Log.d("Dictionary", "По маске $pattern: ${cursor.getString(0)}")
+        }
+        cursor.close()
+    }
+
+    // 3. Поиск с перестановкой соседних букв (частые ошибки)
+    // превет -> рпевет, первет, првеет, прееВт и т.д.
+    for (i in 0 until word.length - 1) {
+        val swapped = word.substring(0, i) + word[i+1] + word[i] + word.substring(i + 2)
+        cursor = db.query(
+            DictionaryDBHelper.TABLE_DICTIONARY,
+            arrayOf(DictionaryDBHelper.COLUMN_WORD),
+            "${DictionaryDBHelper.COLUMN_WORD} = ?",
+            arrayOf(swapped),
+            null, null, null
+        )
+        while (cursor.moveToNext()) {
+            candidates.add(cursor.getString(0))
+            Log.d("Dictionary", "Перестановка: ${cursor.getString(0)}")
+        }
+        cursor.close()
+    }
+
+    // 4. Поиск с пропущенной буквой (если слово короче)
+    if (word.length > 3) {
+        for (i in word.indices) {
+            val withoutChar = word.substring(0, i) + word.substring(i + 1)
+            cursor = db.query(
+                DictionaryDBHelper.TABLE_DICTIONARY,
+                arrayOf(DictionaryDBHelper.COLUMN_WORD),
+                "${DictionaryDBHelper.COLUMN_WORD} = ?",
+                arrayOf(withoutChar),
+                null, null, null
+            )
+            while (cursor.moveToNext()) {
+                candidates.add(cursor.getString(0))
+                Log.d("Dictionary", "Без буквы: ${cursor.getString(0)}")
+            }
+            cursor.close()
+        }
+    }
+
+    // 5. Поиск с лишней буквой (если слово длиннее)
+    for (c in 'а'..'я') {
+        for (i in 0..word.length) {
+            val withChar = word.substring(0, i) + c + word.substring(i)
+            cursor = db.query(
+                DictionaryDBHelper.TABLE_DICTIONARY,
+                arrayOf(DictionaryDBHelper.COLUMN_WORD),
+                "${DictionaryDBHelper.COLUMN_WORD} = ?",
+                arrayOf(withChar),
+                null, null, null
+            )
+            while (cursor.moveToNext()) {
+                candidates.add(cursor.getString(0))
+                Log.d("Dictionary", "С буквой $c: ${cursor.getString(0)}")
+            }
+            cursor.close()
+        }
+    }
+
+    db.close()
+
+    Log.d("Dictionary", "Всего найдено кандидатов: ${candidates.size}")
+    return candidates.toList()
+}
+
+    private fun getWordFrequency(word: String): Int? {
+        // Сначала проверяем кэш
+        frequencyCache[word]?.let { return it }
+
+        // Ищем в БД
+        val db = dbHelper.readableDatabase
+        val cursor = db.query(
+            DictionaryDBHelper.TABLE_DICTIONARY,
+            arrayOf(DictionaryDBHelper.COLUMN_FREQUENCY),
+            "${DictionaryDBHelper.COLUMN_WORD} = ?",
+            arrayOf(word),
+            null, null, null
+        )
+
+        var frequency: Int? = null
+        if (cursor.moveToFirst()) {
+            frequency = cursor.getInt(0)
+            // Добавляем в кэш
+            frequencyCache[word] = frequency
+        }
+        cursor.close()
+        db.close()
+
+        return frequency
+    }
+
+    private fun preserveCase(original: String, corrected: String): String {
+        return when {
+            original.all { it.isUpperCase() } -> corrected.uppercase()
+            original[0].isUpperCase() -> corrected.replaceFirstChar { it.uppercase() }
+            else -> corrected.lowercase()
+        }
     }
 
     /**
@@ -196,6 +491,74 @@ class DictionaryManager(private val context: Context) {
      * Проверить, есть ли слово в словаре
      */
     fun isWordInDictionary(word: String): Boolean {
-        return wordFrequency.containsKey(word.lowercase())
+        if (frequencyCache.containsKey(word)) return true
+
+        val db = dbHelper.readableDatabase
+        val cursor = db.query(
+            DictionaryDBHelper.TABLE_DICTIONARY,
+            arrayOf(DictionaryDBHelper.COLUMN_WORD),
+            "${DictionaryDBHelper.COLUMN_WORD} = ?",
+            arrayOf(word),
+            null, null, null
+        )
+        val exists = cursor.count > 0
+        cursor.close()
+        db.close()
+
+        return exists
+    }
+
+    /**
+     * Проверить, загружен ли словарь
+     */
+    fun isLoaded(): Boolean = isLoaded
+
+    class DictionaryDBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+
+        companion object {
+            const val DATABASE_NAME = "dictionary.db"
+            const val DATABASE_VERSION = 1
+            const val TABLE_DICTIONARY = "dictionary"
+            const val COLUMN_ID = "_id"
+            const val COLUMN_WORD = "word"
+            const val COLUMN_FREQUENCY = "frequency"
+        }
+
+        override fun onCreate(db: SQLiteDatabase) {
+            Log.d("Dictionary", "Creating database...")
+
+            val createTable = """
+        CREATE TABLE $TABLE_DICTIONARY (
+            $COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+            $COLUMN_WORD TEXT UNIQUE,
+            $COLUMN_FREQUENCY INTEGER
+        )
+    """.trimIndent()
+            db.execSQL(createTable)
+
+            // Создаем индексы для быстрого поиска
+            db.execSQL("CREATE INDEX idx_word ON $TABLE_DICTIONARY($COLUMN_WORD)")
+            db.execSQL("CREATE INDEX idx_frequency ON $TABLE_DICTIONARY($COLUMN_FREQUENCY DESC)")
+
+            Log.d("Dictionary", "Database created successfully")
+        }
+
+        override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+            Log.d("Dictionary", "Upgrading database from $oldVersion to $newVersion")
+            db.execSQL("DROP TABLE IF EXISTS $TABLE_DICTIONARY")
+            onCreate(db)
+        }
+
+        fun getWordCount(): Int {
+            val db = readableDatabase
+            val cursor = db.rawQuery("SELECT COUNT(*) FROM $TABLE_DICTIONARY", null)
+            var count = 0
+            if (cursor.moveToFirst()) {
+                count = cursor.getInt(0)
+            }
+            cursor.close()
+            db.close()
+            return count
+        }
     }
 }

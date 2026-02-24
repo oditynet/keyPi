@@ -1,5 +1,6 @@
 package com.example.keyboard
 
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -16,6 +17,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.cardview.widget.CardView
+import com.example.keyboard.MyKeyboardService.Companion.PREF_KEY_TOUCH_SENSITIVITY
+import com.example.keyboard.MyKeyboardService.Companion.PREF_KEY_USE_CONTEXT
+import com.example.keyboard.SettingsActivity.Companion.PREF_KEY_DARK_THEME
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class MainActivity : AppCompatActivity() {
@@ -78,47 +82,37 @@ Log.d("TEST", "Density = $density") // У вас в логах должно бы
     }
 
     private fun setupListeners() {
-        // Чувствительность касания
+        // ВОТ ЗДЕСЬ ИСПРАВЛЯЕМ - открываем ТВОИ настройки
+        btnSettings.setOnClickListener {
+            Log.d(TAG, "Opening SettingsActivity")
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
+
+        btnTestKeyboard.setOnClickListener {
+            Log.d(TAG, "Opening system keyboard settings")
+            startActivity(Intent(Settings.ACTION_INPUT_METHOD_SETTINGS))
+        }
+
         sensitivitySeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 sensitivityValue.text = "$progress%"
-                prefs.edit().putInt("touch_sensitivity", progress).apply()
             }
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                prefs.edit().putInt(PREF_KEY_TOUCH_SENSITIVITY, sensitivitySeekBar.progress).apply()
+            }
         })
 
-        // Контекстное предсказание
         contextSwitch.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean("use_context", isChecked).apply()
-            Toast.makeText(this,
-                if (isChecked) "🧠 Контекстное предсказание включено"
-                else "📝 Контекстное предсказание отключено",
-                Toast.LENGTH_SHORT).show()
+            prefs.edit().putBoolean(PREF_KEY_USE_CONTEXT, isChecked).apply()
         }
 
-        // Переключение темы
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean("dark_theme", isChecked).apply()
-            applyTheme()
-            Toast.makeText(this,
-                if (isChecked) "🌙 Тёмная тема включена"
-                else "☀️ Светлая тема включена",
-                Toast.LENGTH_SHORT).show()
-            recreate() // Пересоздаём для применения темы
-        }
-
-        // Кнопка настроек клавиатуры
-        btnSettings.setOnClickListener {
-            showKeyboardSettings()
-        }
-
-        // Кнопка выбора клавиатуры
-        btnTestKeyboard.setOnClickListener {
-            startActivity(Intent(Settings.ACTION_INPUT_METHOD_SETTINGS))
+            prefs.edit().putBoolean(PREF_KEY_DARK_THEME, isChecked).apply()
+            // Перезапускаем activity для применения темы
+            recreate()
         }
     }
-
     private fun applyTheme() {
         val isDarkTheme = prefs.getBoolean("dark_theme", false)
         if (isDarkTheme) {

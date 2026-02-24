@@ -19,7 +19,8 @@ class SettingsActivity : AppCompatActivity() {
         const val PREF_KEY_USE_CONTEXT = "use_context"
         const val PREF_KEY_VIBRO = "vibro"
         const val PREF_KEY_KEY_SIZE = "key_size"
-        const val PREF_KEY_DARK_THEME = "dark_theme"  // добавили для темы
+        const val PREF_KEY_DARK_THEME = "dark_theme"
+        const val PREF_KEY_AUTO_CORRECT = "auto_correct"  // НОВЫЙ КЛЮЧ для автокоррекции
 
         private const val TAG = "SettingsActivity"
     }
@@ -36,8 +37,9 @@ class SettingsActivity : AppCompatActivity() {
         val sensitivityValue = findViewById<TextView>(R.id.sensitivityValue)
         val contextSwitch = findViewById<Switch>(R.id.contextSwitch)
         val vibroSwitch = findViewById<Switch>(R.id.vibroSwitch)
-            val themeSwitch = findViewById<Switch>(R.id.themeSwitch)
+        val themeSwitch = findViewById<Switch>(R.id.themeSwitch)
         val keySizeSpinner = findViewById<Spinner>(R.id.keySizeSpinner)
+        val autoCorrectSwitch = findViewById<Switch>(R.id.autoCorrectSwitch)  // НОВЫЙ Switch
 
         // Загрузка настроек
         val sensitivity = prefs.getInt(PREF_KEY_TOUCH_SENSITIVITY, 70)
@@ -61,6 +63,11 @@ class SettingsActivity : AppCompatActivity() {
         keySizeSpinner.setSelection(keySize)
         Log.d(TAG, "Loaded keySize: $keySize")
 
+        // НОВОЕ: загрузка настройки автокоррекции
+        val autoCorrect = prefs.getBoolean(PREF_KEY_AUTO_CORRECT, true)  // по умолчанию включено
+        autoCorrectSwitch.isChecked = autoCorrect
+        Log.d(TAG, "Loaded auto correct: $autoCorrect")
+
         // Слушатели
         sensitivitySeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -68,7 +75,6 @@ class SettingsActivity : AppCompatActivity() {
             }
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                // Сохраняем только когда перестали крутить
                 prefs.edit().putInt(PREF_KEY_TOUCH_SENSITIVITY, sensitivitySeekBar.progress).apply()
                 Log.d(TAG, "Saved sensitivity: ${sensitivitySeekBar.progress}")
                 Toast.makeText(this@SettingsActivity, "Чувствительность: ${sensitivitySeekBar.progress}%", Toast.LENGTH_SHORT).show()
@@ -99,6 +105,16 @@ class SettingsActivity : AppCompatActivity() {
             Toast.makeText(this,
                 if (isChecked) "Темная тема включена (перезапустите)"
                 else "Светлая тема включена",
+                Toast.LENGTH_SHORT).show()
+        }
+
+        // НОВЫЙ слушатель для автокоррекции
+        autoCorrectSwitch.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean(PREF_KEY_AUTO_CORRECT, isChecked).apply()
+            Log.d(TAG, "Saved auto correct: $isChecked")
+            Toast.makeText(this,
+                if (isChecked) "Автокоррекция включена"
+                else "Автокоррекция отключена",
                 Toast.LENGTH_SHORT).show()
         }
 

@@ -55,7 +55,7 @@
                 android:gravity="end"/>
         </LinearLayout>
 
-        <!-- Контекст -->
+        <!-- Контекстное предсказание -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -79,7 +79,31 @@
                 android:checked="true"/>
         </LinearLayout>
 
-        <!-- Вибро -->
+        <!-- АВТОКОРРЕКЦИЯ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp"
+            android:background="#FFFFFF"
+            android:padding="12dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="✏️ Автокоррекция"
+                android:textSize="16sp"/>
+
+            <Switch
+                android:id="@+id/autoCorrectSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"/>
+        </LinearLayout>
+
+        <!-- Виброотклик -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -98,9 +122,33 @@
 
             <Switch
                 android:id="@+id/vibroSwitch"
-            android:layout_width="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"/>
+        </LinearLayout>
+
+        <!-- Темная тема -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:checked="true"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp"
+            android:background="#FFFFFF"
+            android:padding="12dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🌙 Темная тема"
+                android:textSize="16sp"/>
+
+            <Switch
+                android:id="@+id/themeSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"/>
         </LinearLayout>
 
         <!-- Размер клавиш -->

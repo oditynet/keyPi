@@ -10,6 +10,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.text.TextUtils
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
@@ -33,6 +34,8 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
     private var currentKeyboard: Keyboard? = null
     private var currentLanguage = "ru"
     private var currentMode = "letters"
+    @Volatile
+    private var autoCorrectEnabled = true
 
     // Переменные для разных раскладок
     private var mRussianKeyboardWithoutNumbers: Keyboard? = null
@@ -66,12 +69,28 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
     @Volatile
     private var keySize = 1 // 0 - маленький, 1 - средний, 2 - большой
 
-    // НОВОЕ: Для буфера обмена
+    // Для автокоррекции
+    private lateinit var dictionaryManager: DictionaryManager
+
+    // Переменные для отслеживания последнего слова
+    private var lastWord = ""
+    private var lastWordPosition = -1
+    private var lastCorrectedWord: String? = null
+    private var spacePressed = false
+    private var pendingCorrection = false
+
+    private var needToReturn = false // флаг для возврата после выбора символа/эмодзи
+
+    // Для отмены автокоррекции
+    private var justAutoCorrected = false
+    private var correctionToUndo: String? = null
+
+    // Для буфера обмена
     private lateinit var clipboardManager: ClipboardManager
     private lateinit var clipboardHistoryManager: ClipboardHistoryManager
     private var clipboardButton: Button? = null
     private var clipboardPopup: PopupWindow? = null
-    private var rootContainer: LinearLayout? = null  // ИЗМЕНЕНО: LinearLayout вместо FrameLayout
+    private var rootContainer: LinearLayout? = null
 
     private val density by lazy { resources.displayMetrics.density }
 
@@ -91,6 +110,7 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
         const val PREF_KEY_USE_CONTEXT = "use_context"
         const val PREF_KEY_VIBRO = "vibro"
         const val PREF_KEY_KEY_SIZE = "key_size"
+        const val PREF_KEY_AUTO_CORRECT = "auto_correct"
 
         private const val TAG = "keyPi"
     }
@@ -102,7 +122,10 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
 
         vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
-        // НОВОЕ: Инициализация буфера обмена
+        // Инициализация менеджера словаря
+        dictionaryManager = DictionaryManager(this)
+
+        // Инициализация буфера обмена
         clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         clipboardHistoryManager = ClipboardHistoryManager(this)
 
@@ -162,11 +185,11 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
         useContext = prefs.getBoolean(PREF_KEY_USE_CONTEXT, true)
         vibroEnabled = prefs.getBoolean(PREF_KEY_VIBRO, true)
         keySize = prefs.getInt(PREF_KEY_KEY_SIZE, 1)
+        autoCorrectEnabled = prefs.getBoolean(PREF_KEY_AUTO_CORRECT, false)
 
         Log.d(TAG, "Settings loaded: sensitivity=$touchSensitivity, useContext=$useContext, vibro=$vibroEnabled, keySize=$keySize")
     }
 
-    // НОВОЕ: Проверка буфера обмена
     private fun checkClipboardForCopy() {
         val clip = clipboardManager.primaryClip ?: return
         if (clip.itemCount > 0) {
@@ -174,12 +197,10 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
             val text = item.text?.toString() ?: item.coerceToText(this)?.toString() ?: return
 
             clipboardHistoryManager.addToHistory(text)
-            // Показываем кнопку
             clipboardButton?.visibility = View.VISIBLE
         }
     }
 
-    // НОВОЕ: Создание кнопки буфера (маленькая, 50x50 dp)
     private fun createClipboardButton(): Button {
         return Button(this).apply {
             text = "📋"
@@ -189,11 +210,10 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
             elevation = 10f
             alpha = 0.9f
 
-            // Размер 50x50 dp в пикселях
             val sizeInPx = (50 * density).toInt()
 
             layoutParams = FrameLayout.LayoutParams(sizeInPx, sizeInPx).apply {
-                gravity = Gravity.END  // прижимаем к правому краю
+                gravity = Gravity.END
                 rightMargin = (20 * density).toInt()
             }
 
@@ -203,8 +223,6 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
         }
     }
 
-    // НОВОЕ: Показать историю
-    // НОВОЕ: Показать историю (КОМПАКТНАЯ ВЕРСИЯ)
     private fun showClipboardHistory() {
         val view = keyboardView ?: return
         val history = clipboardHistoryManager.getHistory()
@@ -213,31 +231,29 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
             return
         }
 
-        // СОЗДАЕМ ВЕРТИКАЛЬНЫЙ LINEARLAYOUT ДЛЯ POPUP
         val popupView = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(Color.parseColor("#DD333333"))
-            setPadding(8, 8, 8, 8)  // УМЕНЬШИЛИ PADDING с 20 до 10
+            setPadding(8, 8, 8, 8)
             elevation = 20f
         }
 
-        // 2. ЭЛЕМЕНТЫ ИСТОРИИ (более компактные)
         for (text in history) {
-            val previewText = if (text.length > 36) text.substring(0, 33) + "..." else text  // ПОКАЗЫВАЕМ БОЛЬШЕ ТЕКСТА
+            val previewText = if (text.length > 36) text.substring(0, 33) + "..." else text
             val fullText = text
 
             val itemView = TextView(this).apply {
-                this.text = previewText  // УБРАЛИ ПОКАЗ ДЛИНЫ, ТОЛЬКО ТЕКСТ
+                this.text = previewText
                 setTextColor(Color.WHITE)
-                textSize = 13f  // УМЕНЬШИЛИ РАЗМЕР с 14 до 13
-                setPadding(15, 12, 15, 12)  // УМЕНЬШИЛИ PADDING
+                textSize = 13f
+                setPadding(15, 12, 15, 12)
                 setBackgroundColor(Color.parseColor("#666666"))
 
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 ).apply {
-                    setMargins(0, 2, 0, 2)  // УМЕНЬШИЛИ MARGIN с 5 до 2
+                    setMargins(0, 2, 0, 2)
                 }
 
                 setOnClickListener {
@@ -248,7 +264,6 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
             popupView.addView(itemView)
         }
 
-        // 3. КНОПКИ В ОДНУ СТРОКУ (горизонтально)
         val buttonRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             layoutParams = LinearLayout.LayoutParams(
@@ -257,7 +272,6 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
             )
         }
 
-        // Кнопка очистки
         val clearButton = TextView(this).apply {
             text = "Очистить"
             setTextColor(Color.WHITE)
@@ -267,9 +281,9 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
             gravity = Gravity.CENTER
 
             layoutParams = LinearLayout.LayoutParams(
-                0,  // вес
+                0,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-                1f  // вес 1 - занимает половину
+                1f
             ).apply {
                 rightMargin = 2
             }
@@ -281,7 +295,6 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
             }
         }
 
-        // Кнопка закрытия
         val closeButton = TextView(this).apply {
             text = "Закрыть"
             setTextColor(Color.WHITE)
@@ -293,7 +306,7 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
             layoutParams = LinearLayout.LayoutParams(
                 0,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-                1f  // вес 1 - занимает половину
+                1f
             ).apply {
                 leftMargin = 2
             }
@@ -307,20 +320,17 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
         buttonRow.addView(closeButton)
         popupView.addView(buttonRow)
 
-        // СОЗДАЕМ POPUPWINDOW
         clipboardPopup = PopupWindow(
             popupView,
-            (view.width * 0.7).toInt(),  // УМЕНЬШИЛИ ШИРИНУ с 80% до 70%
+            (view.width * 0.7).toInt(),
             LinearLayout.LayoutParams.WRAP_CONTENT,
             true
         )
 
-        // ПОКАЗЫВАЕМ POPUP
-        clipboardPopup?.showAtLocation(view, Gravity.TOP, 0, 150)  // УМЕНЬШИЛИ ОТСТУП СВЕРХУ
+        clipboardPopup?.showAtLocation(view, Gravity.TOP, 0, 150)
     }
 
     override fun onCreateInputView(): View {
-        // Создаем вертикальный LinearLayout как корневой контейнер
         rootContainer = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             layoutParams = ViewGroup.LayoutParams(
@@ -329,7 +339,6 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
             )
         }
 
-        // Создаем контейнер для кнопки (отдельная строка)
         val buttonContainer = FrameLayout(this).apply {
             layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -337,16 +346,13 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
             )
         }
 
-        // Создаем кнопку буфера
         clipboardButton = createClipboardButton()
         buttonContainer.addView(clipboardButton)
 
-        // Создаем клавиатуру
         keyboardView = layoutInflater.inflate(R.layout.keyboard_view, null) as MyKeyboardView
         keyboardView?.setOnKeyboardActionListener(this)
         keyboardView?.isPreviewEnabled = false
 
-        // Добавляем в корневой контейнер: сначала кнопку, потом клавиатуру
         rootContainer?.addView(buttonContainer)
         rootContainer?.addView(keyboardView)
 
@@ -360,9 +366,9 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
         val view = keyboardView ?: return
 
         val keyboardHeight = when (keySize) {
-            0 -> 180  // маленькая клавиатура
-            1 -> 220  // средняя клавиатура
-            2 -> 260  // большая клавиатура
+            0 -> 180
+            1 -> 220
+            2 -> 260
             else -> 220
         }.dpToPx()
 
@@ -380,6 +386,9 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
 
     private fun Int.dpToPx(): Int = (this * density).toInt()
 
+
+
+
     override fun onStartInputView(info: EditorInfo, restarting: Boolean) {
         super.onStartInputView(info, restarting)
         Log.d(TAG, "Start input view")
@@ -391,12 +400,14 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
             currentMode = "letters"
             shiftState = ShiftState.OFF
             loadKeyboard(currentLanguage, currentMode)
+
+            // Диагностика словаря
+           // dictionaryManager.debugDictionary()
         }
 
         moveKeyboardAboveNavBar()
         updateShiftIndicator()
 
-        // Кнопка всегда видна сверху, если есть история
         clipboardButton?.visibility = if (clipboardHistoryManager.getHistory().isNotEmpty())
             View.VISIBLE else View.GONE
     }
@@ -421,9 +432,9 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
         } else {
             @Suppress("DEPRECATION")
             window.decorView.systemUiVisibility = (
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            )
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    )
         }
     }
 
@@ -453,7 +464,7 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
                     mEnglishKeyboardWithNumbers
                 Log.d(TAG, "Loading numbers keyboard for $language")
             }
-            else -> { // "letters"
+            else -> {
                 currentKeyboard = if (language == "ru")
                     mRussianKeyboardWithoutNumbers
                 else
@@ -543,12 +554,124 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
         processNormalKey(primaryCode)
     }
 
+    /**
+     * Получить последнее слово перед курсором
+     */
+    private fun getLastWordBeforeCursor(): Pair<String, Int> {
+        val inputConnection = currentInputConnection ?: return Pair("", -1)
+
+        // Получаем текст до курсора
+        val textBeforeCursor = inputConnection.getTextBeforeCursor(50, 0)?.toString() ?: return Pair("", -1)
+
+        // Ищем последнее слово
+        val words = textBeforeCursor.split(Regex("[\\s.,!?;:()\\[\\]{}]+"))
+
+        val lastWord = words.lastOrNull() ?: return Pair("", -1)
+        //Log.d(TAG, "!!!!!!!!: $lastWord")
+        // Вычисляем позицию начала слова
+        val position = textBeforeCursor.length - lastWord.length
+
+        return Pair(lastWord, position)
+    }
+
+    /**
+     * Применить автокоррекцию
+     */
+    private fun applyAutoCorrection() {
+    val inputConnection = currentInputConnection ?: return
+    val (currentWord, currentPos) = getLastWordBeforeCursor()
+
+    if (currentWord.length < 3 || !useContext || !dictionaryManager.isLoaded()) {
+        return
+    }
+
+    Log.d(TAG, "applyAutoCorrection: checking '$currentWord'")
+
+    // Если слова нет в словаре - исправляем
+    if (!dictionaryManager.isWordInDictionary(currentWord.lowercase())) {
+        val corrected = dictionaryManager.correctWord(currentWord, currentPos)
+
+        if (corrected != null && corrected != currentWord) {
+            Log.d(TAG, "Auto-correcting: '$currentWord' -> '$corrected'")
+
+            // Удаляем исходное слово
+            inputConnection.deleteSurroundingText(currentWord.length, 0)
+            // Вставляем исправленное
+            inputConnection.commitText(corrected, 1)
+
+            // Сохраняем для отмены
+            lastCorrectedWord = corrected
+            justAutoCorrected = true
+            correctionToUndo = corrected
+
+            if (vibroEnabled) {
+                vibrateShort()
+            }
+        }
+    }
+}
+
+    /**
+     * Отменить последнюю автокоррекцию
+     */
+    private fun undoLastCorrection() {
+        if (!justAutoCorrected || correctionToUndo == null) {
+            Log.d(TAG, "Nothing to undo")
+            return
+        }
+
+        val correctionInfo = dictionaryManager.getLastCorrectionForUndo(correctionToUndo)
+
+        if (correctionInfo != null) {
+            val inputConnection = currentInputConnection ?: return
+
+            Log.d(TAG, "Undo correction: ${correctionInfo.correctedWord} -> ${correctionInfo.originalWord}")
+
+            // Получаем текст перед курсором
+            val textBeforeCursor = inputConnection.getTextBeforeCursor(50, 0)?.toString() ?: ""
+
+            // Проверяем, заканчивается ли текст исправленным словом
+            if (textBeforeCursor.endsWith(correctionInfo.correctedWord)) {
+                // Удаляем исправленное слово
+                inputConnection.deleteSurroundingText(correctionInfo.correctedWord.length, 0)
+                // Вставляем оригинальное
+                inputConnection.commitText(correctionInfo.originalWord, 1)
+
+                Log.d(TAG, "Undo successful")
+
+                // Очищаем состояние
+                dictionaryManager.clearLastCorrection(correctionInfo.correctedWord)
+                justAutoCorrected = false
+                correctionToUndo = null
+            } else {
+                Log.d(TAG, "Text doesn't end with corrected word")
+                justAutoCorrected = false
+            }
+        } else {
+            Log.d(TAG, "No correction info found")
+            justAutoCorrected = false
+        }
+    }
+
     private fun processNormalKey(keyCode: Int) {
         val inputConnection = currentInputConnection ?: return
 
         when (keyCode) {
             Keyboard.KEYCODE_DELETE -> {
-                inputConnection.deleteSurroundingText(1, 0)
+                Log.d(TAG, "Delete pressed, justAutoCorrected=$justAutoCorrected")
+
+                // Если только что было автоисправление - отменяем его
+                if (justAutoCorrected) {
+                    undoLastCorrection()
+                } else {
+                    inputConnection.deleteSurroundingText(1, 0)
+                }
+
+                // Сброс состояний
+                spacePressed = false
+                pendingCorrection = false
+                lastWord = ""
+
                 if (shiftState == ShiftState.TEMPORARY) {
                     shiftState = ShiftState.OFF
                     updateShiftIndicator()
@@ -564,17 +687,31 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
                 updateShiftIndicator()
             }
 
-            10 -> {
+            10 -> { // Enter
                 inputConnection.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER))
                 inputConnection.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER))
+
+                // Сброс состояний
+                spacePressed = false
+                pendingCorrection = false
+                lastWord = ""
+
                 if (shiftState == ShiftState.TEMPORARY) {
                     shiftState = ShiftState.OFF
                     updateShiftIndicator()
                 }
             }
 
-            32 -> {
+
+            32 -> { // Space
+                Log.d(TAG, "Space pressed - processing current word")
+
+                // Применяем автокоррекцию
+                applyAutoCorrection()
+
+                // Вставляем пробел
                 inputConnection.commitText(" ", 1)
+
                 if (shiftState == ShiftState.TEMPORARY) {
                     shiftState = ShiftState.OFF
                     updateShiftIndicator()
@@ -588,6 +725,11 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
                 shiftState = ShiftState.OFF
                 updateShiftIndicator()
                 prefs.edit().putString(PREF_KEY_LANGUAGE, currentLanguage).apply()
+
+                // Сброс состояний
+                spacePressed = false
+                pendingCorrection = false
+                lastWord = ""
             }
 
             KEYCODE_NUMBERS -> {
@@ -598,6 +740,7 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
             }
 
             KEYCODE_EMOJI -> {
+                needToReturn = true
                 currentMode = "emoji"
                 loadKeyboard(currentLanguage, currentMode)
                 shiftState = ShiftState.OFF
@@ -605,6 +748,7 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
             }
 
             KEYCODE_SYMBOLS -> {
+                needToReturn = true
                 currentMode = "symbols"
                 loadKeyboard(currentLanguage, currentMode)
                 shiftState = ShiftState.OFF
@@ -632,10 +776,24 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
                     }
                     inputConnection.commitText(textToCommit, 1)
 
+                    // При вводе буквы сбрасываем флаги автокоррекции
+                    if (char.isLetter()) {
+                        spacePressed = false
+                        pendingCorrection = false
+                        lastWord = "" // Добавить эту строку
+                    }
+
                     if (shiftState == ShiftState.TEMPORARY) {
                         shiftState = ShiftState.OFF
                         updateShiftIndicator()
                     }
+                }
+                if (needToReturn) {
+                    needToReturn = false
+                    currentMode = "letters"
+                    loadKeyboard(currentLanguage, currentMode)
+                    shiftState = ShiftState.OFF
+                    updateShiftIndicator()
                 }
             }
         }
