@@ -1,6 +1,0 @@
-com.example.keyboard.test.app-core-1.7.0-0 /home/odity/.gradle/caches/9.1.0/transforms/a34a6d13869bac500685668b23225bda/transformed/core-1.7.0/res
-com.example.keyboard.test.app-tracing-1.2.0-1 /home/odity/.gradle/caches/9.1.0/transforms/c7e3905a8563103d4c8f3beeffd5a046/transformed/tracing-1.2.0/res
-com.example.keyboard.test.app-updated_navigation_xml-2 /home/odity/bin/keyboard/app/build/generated/updated_navigation_xml/debugAndroidTest
-com.example.keyboard.test.app-packageDebugAndroidTestResources-3 /home/odity/bin/keyboard/app/build/intermediates/incremental/debugAndroidTest/packageDebugAndroidTestResources/merged.dir
-com.example.keyboard.test.app-packageDebugAndroidTestResources-4 /home/odity/bin/keyboard/app/build/intermediates/incremental/debugAndroidTest/packageDebugAndroidTestResources/stripped.dir
-com.example.keyboard.test.app-debugAndroidTest-5 /home/odity/bin/keyboard/app/build/intermediates/merged_res/debugAndroidTest/mergeDebugAndroidTestResources
