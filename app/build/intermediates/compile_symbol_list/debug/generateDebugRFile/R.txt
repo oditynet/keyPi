@@ -14,6 +14,8 @@ int color key_light_pressed 0x0
 int color key_light_special 0x0
 int color key_light_special_pressed 0x0
 int color key_light_text 0x0
+int color key_text_color 0x0
+int color keyboard_background 0x0
 int color keyboard_dark_background 0x0
 int color keyboard_light_background 0x0
 int color language_normal 0x0
@@ -52,6 +54,7 @@ int layout activity_main 0x0
 int layout activity_settings 0x0
 int layout key_preview 0x0
 int layout keyboard_view 0x0
+int raw rus_news_2024_300k_words 0x0
 int string app_name 0x0
 int style AppTheme 0x0
 int style AppTheme_Dark 0x0

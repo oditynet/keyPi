@@ -16,6 +16,8 @@ color key_light_pressed
 color key_light_special
 color key_light_special_pressed
 color key_light_text
+color key_text_color
+color keyboard_background
 color keyboard_dark_background
 color keyboard_light_background
 color language_normal
@@ -54,6 +56,7 @@ layout activity_main
 layout activity_settings
 layout key_preview
 layout keyboard_view
+raw rus_news_2024_300k_words
 string app_name
 style AppTheme
 style AppTheme.Dark

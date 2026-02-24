@@ -3,24 +3,24 @@
 3    package="com.example.keyboard.test" >
 4
 5    <uses-sdk
-5-->/home/odity/AndroidStudioProjects/Keyboard/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest5941864769845318382.xml:5:5-74
+5-->/home/odity/bin/keyboard/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest7973505946636794275.xml:5:5-74
 6        android:minSdkVersion="24"
-6-->/home/odity/AndroidStudioProjects/Keyboard/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest5941864769845318382.xml:5:15-41
+6-->/home/odity/bin/keyboard/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest7973505946636794275.xml:5:15-41
 7        android:targetSdkVersion="36" />
-7-->/home/odity/AndroidStudioProjects/Keyboard/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest5941864769845318382.xml:5:42-71
+7-->/home/odity/bin/keyboard/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest7973505946636794275.xml:5:42-71
 8
 9    <instrumentation
-9-->/home/odity/AndroidStudioProjects/Keyboard/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest5941864769845318382.xml:7:5-11:70
+9-->/home/odity/bin/keyboard/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest7973505946636794275.xml:7:5-11:70
 10        android:name="androidx.test.runner.AndroidJUnitRunner"
-10-->/home/odity/AndroidStudioProjects/Keyboard/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest5941864769845318382.xml:7:22-76
+10-->/home/odity/bin/keyboard/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest7973505946636794275.xml:7:22-76
 11        android:functionalTest="false"
-11-->/home/odity/AndroidStudioProjects/Keyboard/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest5941864769845318382.xml:10:22-52
+11-->/home/odity/bin/keyboard/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest7973505946636794275.xml:10:22-52
 12        android:handleProfiling="false"
-12-->/home/odity/AndroidStudioProjects/Keyboard/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest5941864769845318382.xml:9:22-53
+12-->/home/odity/bin/keyboard/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest7973505946636794275.xml:9:22-53
 13        android:label="Tests for com.example.keyboard"
-13-->/home/odity/AndroidStudioProjects/Keyboard/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest5941864769845318382.xml:11:22-68
+13-->/home/odity/bin/keyboard/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest7973505946636794275.xml:11:22-68
 14        android:targetPackage="com.example.keyboard" />
-14-->/home/odity/AndroidStudioProjects/Keyboard/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest5941864769845318382.xml:8:22-66
+14-->/home/odity/bin/keyboard/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest7973505946636794275.xml:8:22-66
 15
 16    <uses-permission android:name="android.permission.REORDER_TASKS" />
 16-->[androidx.test:core:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/a34a6d13869bac500685668b23225bda/transformed/core-1.7.0/AndroidManifest.xml:24:5-72

@@ -12,8 +12,8 @@
         "source": "/home/odity/.gradle/daemon/9.1.0/com.example.keyboard.app-main-50:/xml/method.xml"
     },
     {
-        "merged": "com.example.keyboard.app-debug-48:/xml_keyboard_layout_ru_number.xml.flat",
-        "source": "com.example.keyboard.app-main-50:/xml/keyboard_layout_ru_number.xml"
+        "merged": "com.example.keyboard.app-debug-48:/raw_rus_news_2024_300k_words.txt.flat",
+        "source": "com.example.keyboard.app-main-50:/raw/rus_news_2024_300k_words.txt"
     },
     {
         "merged": "/home/odity/.gradle/daemon/9.1.0/com.example.keyboard.app-debug-48:/xml_keyboard_layout_ru_number.xml.flat",
@@ -46,10 +46,6 @@
     {
         "merged": "/home/odity/.gradle/daemon/9.1.0/com.example.keyboard.app-debug-48:/layout_keyboard_view.xml.flat",
         "source": "/home/odity/.gradle/daemon/9.1.0/com.example.keyboard.app-main-50:/layout/keyboard_view.xml"
-    },
-    {
-        "merged": "com.example.keyboard.app-debug-48:/xml_keyboard_layout_ru.xml.flat",
-        "source": "com.example.keyboard.app-main-50:/xml/keyboard_layout_ru.xml"
     },
     {
         "merged": "/home/odity/.gradle/daemon/9.1.0/com.example.keyboard.app-debug-48:/xml_keyboard_layout_emoji.xml.flat",

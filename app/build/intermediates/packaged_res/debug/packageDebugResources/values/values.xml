@@ -20,6 +20,8 @@
     <color name="key_light_special">#FFFFB74D</color>
     <color name="key_light_special_pressed">#FFFF9800</color>
     <color name="key_light_text">#FF000000</color>
+    <color name="key_text_color">#FFFFFFFF</color>
+    <color name="keyboard_background">#FF1E1E1E</color>
     <color name="keyboard_dark_background">#FF1E1E1E</color>
     <color name="keyboard_light_background">#FFE0E0E0</color>
     <color name="language_normal">#FFFF9800</color>
