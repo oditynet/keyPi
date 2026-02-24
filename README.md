@@ -11,7 +11,7 @@ TODO: клавиатура выставляется по умолчанию, н�
 <table>
   <tr>
     <td><img src="https://github.com/oditynet/keyboard/blob/main/res4.png" width="300" height="auto" /></td>
-    <td><img src="https://github.com/oditynet/keyboard/blob/main/res2.jpg" width="300" height="auto" /></td>
+    <td><img src="https://github.com/oditynet/keyboard/blob/main/res5.png" width="300" height="auto" /></td>
     <td><img src="https://github.com/oditynet/keyboard/blob/main/res3.jpg" width="300" height="auto" /></td>
   </tr>
 </table>
