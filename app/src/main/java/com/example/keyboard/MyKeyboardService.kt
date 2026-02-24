@@ -223,7 +223,7 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
 
         // 2. ЭЛЕМЕНТЫ ИСТОРИИ (более компактные)
         for (text in history) {
-            val previewText = if (text.length > 15) text.substring(0, 12) + "..." else text  // ПОКАЗЫВАЕМ БОЛЬШЕ ТЕКСТА
+            val previewText = if (text.length > 36) text.substring(0, 33) + "..." else text  // ПОКАЗЫВАЕМ БОЛЬШЕ ТЕКСТА
             val fullText = text
 
             val itemView = TextView(this).apply {
