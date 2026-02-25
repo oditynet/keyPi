@@ -59,6 +59,8 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
     private var longPressRunnable: Runnable? = null
     private val LONG_PRESS_TIME = 400L
 
+    private val currentTouchPositions = mutableListOf<MyKeyboardView.TouchPosition>()
+
     // Настройки
     @Volatile
     private var touchSensitivity = 70
@@ -353,6 +355,15 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
         keyboardView?.setOnKeyboardActionListener(this)
         keyboardView?.isPreviewEnabled = false
 
+        keyboardView?.onKeyWithPositionListener = { keyCode, touchPosition ->
+            // Сохраняем позицию касания для текущей буквы
+            if (keyCode in 0..0xFFFF) { // Если это буква
+                currentTouchPositions.add(touchPosition)
+            }
+            // Вызываем существующий onKey
+            onKey(keyCode, null)
+        }
+
         rootContainer?.addView(buttonContainer)
         rootContainer?.addView(keyboardView)
 
@@ -578,38 +589,44 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
      * Применить автокоррекцию
      */
     private fun applyAutoCorrection() {
-    val inputConnection = currentInputConnection ?: return
-    val (currentWord, currentPos) = getLastWordBeforeCursor()
+        val inputConnection = currentInputConnection ?: return
+        val (currentWord, currentPos) = getLastWordBeforeCursor()
 
-    if (currentWord.length < 3 || !useContext || !dictionaryManager.isLoaded()) {
-        return
-    }
+        if (currentWord.length < 2 || !useContext || !dictionaryManager.isLoaded()) {
+            return
+        }
 
-    Log.d(TAG, "applyAutoCorrection: checking '$currentWord'")
+        Log.d(TAG, "applyAutoCorrection: checking '$currentWord'")
 
-    // Если слова нет в словаре - исправляем
-    if (!dictionaryManager.isWordInDictionary(currentWord.lowercase())) {
-        val corrected = dictionaryManager.correctWord(currentWord, currentPos)
+        // Проверяем, есть ли слово в словаре
+        if (!dictionaryManager.isWordInDictionary(currentWord.lowercase())) {
+            // Используем новую функцию с позициями касаний
+            val corrected = if (currentTouchPositions.size == currentWord.length) {
+                dictionaryManager.correctWordWithPosition(currentWord, currentTouchPositions.toList(), currentPos)
+            } else {
+                // Если позиций не хватает, используем старый метод
+                dictionaryManager.correctWord(currentWord, currentPos)
+            }
 
-        if (corrected != null && corrected != currentWord) {
-            Log.d(TAG, "Auto-correcting: '$currentWord' -> '$corrected'")
+            if (corrected != null && corrected != currentWord) {
+                Log.d(TAG, "Auto-correcting with position: '$currentWord' -> '$corrected'")
 
-            // Удаляем исходное слово
-            inputConnection.deleteSurroundingText(currentWord.length, 0)
-            // Вставляем исправленное
-            inputConnection.commitText(corrected, 1)
+                inputConnection.deleteSurroundingText(currentWord.length, 0)
+                inputConnection.commitText(corrected, 1)
 
-            // Сохраняем для отмены
-            lastCorrectedWord = corrected
-            justAutoCorrected = true
-            correctionToUndo = corrected
+                lastCorrectedWord = corrected
+                justAutoCorrected = true
+                correctionToUndo = corrected
 
-            if (vibroEnabled) {
-                vibrateShort()
+                if (vibroEnabled) {
+                    vibrateShort()
+                }
             }
         }
+
+        // Очищаем позиции для следующего слова
+        currentTouchPositions.clear()
     }
-}
 
     /**
      * Отменить последнюю автокоррекцию
@@ -665,6 +682,10 @@ class MyKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionLis
                     undoLastCorrection()
                 } else {
                     inputConnection.deleteSurroundingText(1, 0)
+                    if (currentTouchPositions.isNotEmpty()) {
+                        currentTouchPositions.removeAt(currentTouchPositions.size - 1)
+                    }
+        //inputConnection.deleteSurroundingText(1, 0)
                 }
 
                 // Сброс состояний

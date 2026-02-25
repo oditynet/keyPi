@@ -8,6 +8,7 @@ import android.graphics.Typeface
 import android.inputmethodservice.Keyboard
 import android.inputmethodservice.KeyboardView
 import android.util.AttributeSet
+import android.view.MotionEvent
 
 class MyKeyboardView : KeyboardView {
 
@@ -26,6 +27,8 @@ class MyKeyboardView : KeyboardView {
         "," to ".",
         "." to ","
     )
+
+
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         init()
@@ -64,5 +67,63 @@ class MyKeyboardView : KeyboardView {
             }
         }
     }
+    var onKeyWithPositionListener: ((Int, MyKeyboardView.TouchPosition) -> Unit)? = null
+
+    // Добавить enum внутри класса MyKeyboardView (после existing переменных)
+    enum class TouchPosition {
+        TOP_LEFT, TOP, TOP_RIGHT,
+        LEFT, CENTER, RIGHT,
+        BOTTOM_LEFT, BOTTOM, BOTTOM_RIGHT
+    }
+
+    // Добавить метод getKeyAt (после существующих методов)
+    private fun getKeyAt(x: Float, y: Float): Keyboard.Key? {
+        val keys = keyboard?.keys ?: return null
+        for (key in keys) {
+            if (x >= key.x && x <= key.x + key.width &&
+                y >= key.y && y <= key.y + key.height) {
+                return key
+            }
+        }
+        return null
+    }
+
+    // Добавить метод getTouchPositionOnKey (после getKeyAt)
+    private fun getTouchPositionOnKey(key: Keyboard.Key, x: Float, y: Float): TouchPosition {
+        val relX = (x - key.x) / key.width
+        val relY = (y - key.y) / key.height
+
+        return when {
+            relY < 0.25 && relX < 0.25 -> TouchPosition.TOP_LEFT
+            relY < 0.25 && relX > 0.75 -> TouchPosition.TOP_RIGHT
+            relY < 0.25 -> TouchPosition.TOP
+
+            relY > 0.75 && relX < 0.25 -> TouchPosition.BOTTOM_LEFT
+            relY > 0.75 && relX > 0.75 -> TouchPosition.BOTTOM_RIGHT
+            relY > 0.75 -> TouchPosition.BOTTOM
+
+            relX < 0.25 -> TouchPosition.LEFT
+            relX > 0.75 -> TouchPosition.RIGHT
+            else -> TouchPosition.CENTER
+        }
+    }
+
+    // Переопределить onTouchEvent (добавить после существующих методов)
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+    when (event.action) {
+        MotionEvent.ACTION_DOWN -> {
+            val x = event.x
+            val y = event.y
+            val key = getKeyAt(x, y)
+
+            if (key != null && key.codes.isNotEmpty()) {
+                val touchPosition = getTouchPositionOnKey(key, x, y)
+                onKeyWithPositionListener?.invoke(key.codes[0], touchPosition)
+                return true // Говорим, что обработали событие
+            }
+        }
+    }
+    return super.onTouchEvent(event) // Это будет вызвано только если мы не вернули true
+}
 }
 
